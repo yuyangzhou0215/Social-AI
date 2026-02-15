@@ -1,14 +1,15 @@
 package handler
 
 import (
-    "net/http" 
+	"net/http"
 
-    "github.com/gorilla/mux"   
+	"github.com/gorilla/mux"
 )
 
 func InitRouter() *mux.Router {
-    router := mux.NewRouter()
-    router.Handle("/upload", http.HandlerFunc(uploadHandler)).Methods("POST")
-    return router
-}
+	router := mux.NewRouter()
+	router.Handle("/upload", http.HandlerFunc(uploadHandler)).Methods("POST")
+	router.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
 
+	return router
+}

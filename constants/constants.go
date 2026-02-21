@@ -6,4 +6,6 @@ const (
 	ES_URL      = "http://10.138.0.2:9200"
 	ES_USERNAME = "cherie"
 	ES_PASSWORD = "123456"
+	GCS_BUCKET = "socialai0215"
+
 )

@@ -9,6 +9,7 @@ import (
 	"socialai/model"
 	"socialai/service"
 
+	jwt "github.com/form3tech-oss/jwt-go"
 	"github.com/pborman/uuid"
 )
 
@@ -27,36 +28,40 @@ var (
 )
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one upload request")
+    fmt.Println("Received one upload request")
 
-	p := model.Post{
-		Id:      uuid.New(),
-		User:    r.FormValue("user"),
-		Message: r.FormValue("message"),
-	}
+    token := r.Context().Value("user")
+    claims := token.(*jwt.Token).Claims
+    username := claims.(jwt.MapClaims)["username"]
 
-	file, header, err := r.FormFile("media_file")
-	if err != nil {
-		http.Error(w, "Media file is not available", http.StatusBadRequest)
-		fmt.Printf("Media file is not available %v\n", err)
-		return
-	}
+    p := model.Post{
+        Id:      uuid.New(),
+        User:    username.(string),
+        Message: r.FormValue("message"),
+    }
 
-	suffix := filepath.Ext(header.Filename)
-	if t, ok := mediaTypes[suffix]; ok {
-		p.Type = t
-	} else {
-		p.Type = "unknown"
-	}
+    file, header, err := r.FormFile("media_file")
+    if err != nil {
+        http.Error(w, "Media file is not available", http.StatusBadRequest)
+        fmt.Printf("Media file is not available %v\n", err)
+        return
+    }
 
-	err = service.SavePost(&p, file)
-	if err != nil {
-		http.Error(w, "Failed to save post to backend", http.StatusInternalServerError)
-		fmt.Printf("Failed to save post to backend %v\n", err)
-		return
-	}
+    suffix := filepath.Ext(header.Filename)
+    if t, ok := mediaTypes[suffix]; ok {
+        p.Type = t
+    } else {
+        p.Type = "unknown"
+    }
 
-	fmt.Println("Post is saved successfully.")
+    err = service.SavePost(&p, file)
+    if err != nil {
+        http.Error(w, "Failed to save post to backend", http.StatusInternalServerError)
+        fmt.Printf("Failed to save post to backend %v\n", err)
+        return
+    }
+
+    fmt.Println("Post is saved successfully.")
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {

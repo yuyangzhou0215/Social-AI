@@ -1,4 +1,4 @@
-# Social-AI
+# FeedFlow: A High-Concurrency Social Content Platform with AI-Generated Posts
 
 A full-stack social network application built with Go (Golang) and React.
 
